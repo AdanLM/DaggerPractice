@@ -10,9 +10,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
+@Singleton
 @Module
 public class GlideModule {
 
