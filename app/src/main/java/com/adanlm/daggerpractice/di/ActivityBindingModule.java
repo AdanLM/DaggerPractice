@@ -1,6 +1,7 @@
 package com.adanlm.daggerpractice.di;
 
-import com.adanlm.daggerpractice.AuthActivity;
+import com.adanlm.daggerpractice.di.auth.AuthViewModelModule;
+import com.adanlm.daggerpractice.ui.auth.AuthActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -13,6 +14,6 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityBindingModule {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = AuthViewModelModule.class)
     abstract AuthActivity authActivity();
 }
