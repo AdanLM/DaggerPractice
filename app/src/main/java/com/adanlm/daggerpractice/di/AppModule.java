@@ -1,10 +1,15 @@
 package com.adanlm.daggerpractice.di;
 
 import com.adanlm.daggerpractice.di.modules.GlideModule;
+import com.adanlm.daggerpractice.util.Constants;
 import com.bumptech.glide.request.RequestOptions;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Aqui declaramos las dependencias que no cambiaran durante la ejecucion de la aplicacion.
@@ -13,4 +18,12 @@ import dagger.Provides;
 @Module(includes = GlideModule.class)
 public class AppModule {
 
+    @Singleton
+    @Provides
+    static Retrofit provideRetrofitInstance(){
+        return new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
 }
