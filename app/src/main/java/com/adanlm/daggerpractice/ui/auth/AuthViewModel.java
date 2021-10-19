@@ -1,13 +1,10 @@
 package com.adanlm.daggerpractice.ui.auth;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.adanlm.daggerpractice.SessionManager;
 import com.adanlm.daggerpractice.models.User;
 import com.adanlm.daggerpractice.network.auth.AuthApi;
 
@@ -21,55 +18,43 @@ public class AuthViewModel extends ViewModel {
     private static final String TAG = "AuthViewModel";
 
     private final AuthApi authApi;
-
-    private MediatorLiveData<AuthResource<User>> authUser = new MediatorLiveData<>();
+    private SessionManager sesionManager;
 
     @Inject
-    public AuthViewModel(AuthApi authApi) {
+    public AuthViewModel(AuthApi authApi, SessionManager sesionManager) {
         this.authApi = authApi;
-        if (authApi == null) {
-            Log.d(TAG, "AuthViewModel: auth api is NULL");
-        } else {
-            Log.d(TAG, "AuthViewModel: auth api is Not NULL");
-        }
+        this.sesionManager = sesionManager;
     }
 
     public void authenticateWithId(int userId) {
-        authUser.setValue(AuthResource.loading(null));
-        final LiveData<AuthResource<User>> source = LiveDataReactiveStreams.fromPublisher(
-                authApi
-                        .getUser(userId)
-                        //Aqui se obtiene cualquier error posible que pueda ocurrir al consultar la API
-                        .onErrorReturn(new Function<Throwable, User>() {
-                            @Override
-                            public User apply(@NonNull Throwable throwable) throws Exception {
-                                User errorUser = new User();
-                                errorUser.setId(-1);
-                                return errorUser;
-                            }
-                        })
-                        //Buscamos si existe algun error para usar el wrapper
-                        .map(new Function<User, AuthResource<User>>() {
-                            @Override
-                            public AuthResource<User> apply(@NonNull User user) throws Exception {
-                                if (user.getId() == -1) {
-                                    return AuthResource.error("Could not authenticate", null);
-                                }
-                                return AuthResource.authenticated(user);
-                            }
-                        })
-                        .subscribeOn(Schedulers.io()));
-
-        authUser.addSource(source, new Observer<AuthResource<User>>() {
-            @Override
-            public void onChanged(AuthResource<User> user) {
-                authUser.setValue(user);
-                authUser.removeSource(source);
-            }
-        });
+        sesionManager.authenticateWithId(queryUserId(userId));
     }
 
-    public LiveData<AuthResource<User>> observerUser() {
-        return authUser;
+    private LiveData<AuthResource<User>> queryUserId(int userId) {
+        return LiveDataReactiveStreams.fromPublisher(authApi.getUser(userId)
+                //Aqui se obtiene cualquier error posible que pueda ocurrir al consultar la API
+                .onErrorReturn(new Function<Throwable, User>() {
+                    @Override
+                    public User apply(@NonNull Throwable throwable) throws Exception {
+                        User errorUser = new User();
+                        errorUser.setId(-1);
+                        return errorUser;
+                    }
+                })
+                //Buscamos si existe algun error para usar el wrapper
+                .map(new Function<User, AuthResource<User>>() {
+                    @Override
+                    public AuthResource<User> apply(@NonNull User user) throws Exception {
+                        if (user.getId() == -1) {
+                            return AuthResource.error("Could not authenticate", null);
+                        }
+                        return AuthResource.authenticated(user);
+                    }
+                })
+                .subscribeOn(Schedulers.io()));
+    }
+
+    public LiveData<AuthResource<User>> observerAuthState() {
+        return sesionManager.getAuthUser();
     }
 }

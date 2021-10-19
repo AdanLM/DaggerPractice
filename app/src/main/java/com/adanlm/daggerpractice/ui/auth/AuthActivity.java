@@ -1,5 +1,6 @@
 package com.adanlm.daggerpractice.ui.auth;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.adanlm.daggerpractice.R;
 import com.adanlm.daggerpractice.models.User;
+import com.adanlm.daggerpractice.ui.main.MainActivity;
 import com.adanlm.daggerpractice.viewmodels.ViewModelProviderFactory;
 import com.bumptech.glide.RequestManager;
 
@@ -58,7 +60,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscriveObservers() {
-        authViewModel.observerUser().observe(this, userAuthResource -> {
+        authViewModel.observerAuthState().observe(this, userAuthResource -> {
             if(userAuthResource != null){
                 switch (userAuthResource.status){
                     case LOADING:
@@ -67,6 +69,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                     case AUTHENTICATED:
                         showProgressBar(false);
                         Log.d(TAG, "subscriveObservers: " + userAuthResource.data.getEmail());
+                        onLoginSuccess();
                         break;
                     case ERROR:
                         showProgressBar(false);
@@ -110,5 +113,11 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         } else {
             authViewModel.authenticateWithId(Integer.parseInt(userId));
         }
+    }
+
+    private void onLoginSuccess(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
