@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.adanlm.daggerpractice.BaseActivity;
 import com.adanlm.daggerpractice.R;
+import com.adanlm.daggerpractice.ui.profile.ProfileFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -18,6 +19,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        testFragment();
     }
 
     @Override
@@ -35,5 +37,11 @@ public class MainActivity extends BaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void testFragment(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, new ProfileFragment())
+                .commit();
     }
 }
