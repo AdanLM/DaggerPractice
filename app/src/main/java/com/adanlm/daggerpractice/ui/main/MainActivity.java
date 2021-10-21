@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.adanlm.daggerpractice.BaseActivity;
 import com.adanlm.daggerpractice.R;
+import com.adanlm.daggerpractice.ui.posts.PostsFragment;
 import com.adanlm.daggerpractice.ui.profile.ProfileFragment;
 
 public class MainActivity extends BaseActivity {
@@ -41,7 +42,7 @@ public class MainActivity extends BaseActivity {
 
     private void testFragment(){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new ProfileFragment())
+                .replace(R.id.container, new PostsFragment())
                 .commit();
     }
 }
