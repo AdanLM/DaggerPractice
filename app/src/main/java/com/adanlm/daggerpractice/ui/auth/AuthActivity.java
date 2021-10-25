@@ -56,10 +56,10 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         authViewModel = new ViewModelProvider(this, providerFactory).get(AuthViewModel.class);
         setLogo();
 
-        subscriveObservers();
+        subscribeObservers();
     }
 
-    private void subscriveObservers() {
+    private void subscribeObservers() {
         authViewModel.observerAuthState().observe(this, userAuthResource -> {
             if(userAuthResource != null){
                 switch (userAuthResource.status){
